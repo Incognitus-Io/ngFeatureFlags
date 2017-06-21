@@ -20,7 +20,9 @@ import { FeatureFlagService } from '../services/feature-flag.service';
 import { FeatureFlagConfig } from '../services/feature-flag-config';
 
 describe('FeatureFlagDirective', () => {
-    var  mockService: IMock<FeatureFlagService>;
+    var mockService: IMock<FeatureFlagService>;
+    var debugElement: DebugElement;
+    var element: HTMLElement;
 
     beforeEach(async(() => {
         mockService = Mock.ofType(FeatureFlagService);
@@ -28,21 +30,20 @@ describe('FeatureFlagDirective', () => {
         TestBed.configureTestingModule({
             declarations: [SimpleToggleComponent, HiddenToggleComponent, FeatureFlagDirective],
             providers: [
-                { provide: FeatureFlagService, useVaule: mockService.object }
+                { provide: FeatureFlagService, useValue: mockService.object }
             ]
-        });
-
-        TestBed.compileComponents();
+        })
+            .compileComponents();
     }));
 
     describe('Simple feature flag', () => {
         var fixture: ComponentFixture<SimpleToggleComponent>;
-        var element: HTMLElement;
 
         function buildComponent() {
             fixture = TestBed.createComponent(SimpleToggleComponent);
             fixture.detectChanges();
-            element = fixture.debugElement.query(By.css('#Foobar')).nativeElement;
+            debugElement = fixture.debugElement.query(By.css('#Foobar'))
+            element = debugElement ? debugElement.nativeElement : undefined;
         }
 
         it('should show elemetn when feature is enabled', () => {
@@ -50,7 +51,39 @@ describe('FeatureFlagDirective', () => {
             buildComponent();
 
             expect(element).toBeDefined();
-        })
+        });
+
+        it('should hide elemetn when feature is disabled', () => {
+            mockService.setup(x => x.isEnabled(It.isAnyString())).returns(() => Observable.of(false));
+            buildComponent();
+
+            expect(element).not.toBeDefined();
+        });
+    });
+
+    describe('Hidden feature flag', () => {
+        var fixture: ComponentFixture<HiddenToggleComponent>;
+
+        function buildComponent() {
+            fixture = TestBed.createComponent(HiddenToggleComponent);
+            fixture.detectChanges();
+            debugElement = fixture.debugElement.query(By.css('#Foobar'))
+            element = debugElement ? debugElement.nativeElement : undefined;
+        }
+
+        it('should hide elemetn when feature is enabled', () => {
+            mockService.setup(x => x.isEnabled(It.isAnyString())).returns(() => Observable.of(true));
+            buildComponent();
+
+            expect(element).not.toBeDefined();
+        });
+
+        it('should show elemetn when feature is disabled', () => {
+            mockService.setup(x => x.isEnabled(It.isAnyString())).returns(() => Observable.of(false));
+            buildComponent();
+
+            expect(element).toBeDefined();
+        });
     });
 });
 

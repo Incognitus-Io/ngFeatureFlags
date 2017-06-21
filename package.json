@@ -1,15 +1,40 @@
 {
-  "name": "dark-lumos-ng-feature-flags",
+  "name": "ng-feature-flags",
   "version": "0.1.0",
   "license": "MIT",
+  "author": "James Stumme <stummej@darklumos.io>",
+  "description": "Dark Lumos feature flag directive and servie for Angular (2 and beyond).",
   "scripts": {
     "ng": "ng",
     "build": "ng build",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "prepublish": "tsc"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DarkLumos/ngFeatureFlags.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DarkLumos/ngFeatureFlags/issues"
+  },
+  "homepage": "https://github.com/DarkLumos/ngFeatureFlags#readme",
+  "keywords": [
+    "feature-flags",
+    "feature-toggle",
+    "feature",
+    "toggle",
+    "flags",
+    "dark-lumos"
+  ],
   "private": true,
-  "dependencies": {
+  "peerDependencies": {
+    "@angular/common": ">=4.0.0",
+    "@angular/core": ">=4.0.0",
+    "@angular/http": ">=4.0.0",
+    "rxjs": ">=5.1.0"
+  },
+  "devDependencies": {
     "@angular/common": "^4.0.0",
     "@angular/compiler": "^4.0.0",
     "@angular/core": "^4.0.0",
@@ -18,9 +43,7 @@
     "@angular/platform-browser-dynamic": "^4.0.0",
     "core-js": "^2.4.1",
     "rxjs": "^5.1.0",
-    "zone.js": "^0.8.4"
-  },
-  "devDependencies": {
+    "zone.js": "^0.8.4",
     "@angular/cli": "1.0.0",
     "@angular/compiler-cli": "^4.0.0",
     "@types/jasmine": "2.5.38",

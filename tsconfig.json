@@ -1,14 +1,15 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "outDir": "./dist/out-tsc",
+    "outDir": "./dist",
     "baseUrl": "src",
     "sourceMap": true,
-    "declaration": false,
+    "declaration": true,
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "target": "es5",
+    "module":"commonjs",
     "typeRoots": [
       "node_modules/@types"
     ],
@@ -16,5 +17,15 @@
       "es2016",
       "dom"
     ]
-  }
+  },
+  "angularCompilerOptions": {
+    "skipTemplateCodegen": true
+  },
+  "exclude": [
+    "*.spec.ts",
+    "src/main.ts",
+    "src/polyfills.ts",
+    "src/test.ts",
+    "node_modules"
+  ]
 }

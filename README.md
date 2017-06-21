@@ -1,28 +1,41 @@
-# DarkLumosNgFeatureFlags
+# Dark Lumos Feature Flag (Angular)
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.0.0.
+## Integrating Dark Lumos
+Integration of Dark Lumos into your Angular application is done in 2 setps.
+#### Step 1) environment.ts
+A section named `featureFlag` must be added to your `enviroment.ts` file.
+   ```TypeScript
+   featureFlag: {
+    apiUri: http://darklumos.io/api/
+  }
+  ```
+  
+  Key | Description
+  --- | ---
+  apiUri | The uri of the Dark Lumos API
 
-## Development server
+#### Step 2) app.modules.ts
+  Import the `DarkLumosFeatureFlagsModule` and provide the `FeatureFlagConfig`
+  ```TypeScript
+  imports: [
+      ...
+      DarkLumosFeatureFlagModule
+  ],
+  providers: [
+      ...
+      { provide: FeatureFlagConfig, useValue: <FeaturFlagConfig>environment.featureFlag }
+  ]
+  ```
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+## Using in the template
+Feature flags can be used to section off a chuck of template.  To do this just add the `*ngFeatureFlag` attribute, with the value of your feature flag name in single quotes, to the element you would like to feature flag.  You can also set the feature flag to hide an element when the feature flag is on by adding `; Hidden: true` to the attribute's value.
 
-## Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive/pipe/service/class/module`.
-
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-Before running the tests make sure you are serving the app via `ng serve`.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+Below are a few examples.
+```html
+<div *ngFeatureFlag="'Fizzbuzz'">
+  <span>Fizzbuzz shown when enabled</span>
+</div>
+<div *ngFeatureFlag="'Foobar'; Hidden: true">
+  <span>Foobar hidden if enabled</span>
+</div>
+```

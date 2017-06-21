@@ -13,14 +13,14 @@ import { FeatureFlagService } from './feature-flag.service';
 import { FeatureFlagConfig } from './feature-flag-config';
 
 class MockError extends Response implements Error {
-  name: any
-  message: any
+  name: any;
+  message: any;
 }
 
 describe('FeatureFlagService', () => {
-  const apiUri: string = 'http://darklumos/api/';
-  var service: FeatureFlagService;
-  var backend: MockBackend;
+  const apiUri = 'http://darklumos/api/';
+  let service: FeatureFlagService;
+  let backend: MockBackend;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -40,7 +40,7 @@ describe('FeatureFlagService', () => {
 
   describe('isEnabled', () => {
     it('should make a GET call with the proper url', () => {
-      var expectedFeatureName = 'Foobar';
+      const expectedFeatureName = 'Foobar';
 
       backend.connections.subscribe((conn: MockConnection) => {
         expect(conn.request.url).toBe(this.apiUri + 'feature/' + expectedFeatureName);
@@ -67,7 +67,7 @@ describe('FeatureFlagService', () => {
     it('should return false and log when service fails other than not found', () => {
       spyOn(console, 'error');
 
-      var responseBody = 'Bad request';
+      const responseBody = 'Bad request';
       backend.connections.subscribe((connection: MockConnection) => {
         connection.mockError(new MockError(new ResponseOptions({
           type: ResponseType.Error,
@@ -83,8 +83,8 @@ describe('FeatureFlagService', () => {
     });
 
     it('should return true when feature exists and is enabled', () => {
-      var featureName = 'foobar'
-      var response = { 'name': featureName, 'isEnabled': true }
+      const featureName = 'foobar';
+      const response = { 'name': featureName, 'isEnabled': true };
       backend.connections.subscribe((connection: MockConnection) => {
         connection.mockRespond(new Response(new ResponseOptions({
           body: JSON.stringify(response),
@@ -98,8 +98,8 @@ describe('FeatureFlagService', () => {
     });
 
     it('should return false when feature exists and is disabled', () => {
-      var featureName = 'foobar'
-      var response = { 'name': featureName, 'isEnabled': false }
+      const featureName = 'foobar';
+      const response = { 'name': featureName, 'isEnabled': false };
       backend.connections.subscribe((connection: MockConnection) => {
         connection.mockRespond(new Response(new ResponseOptions({
           body: JSON.stringify(response),
@@ -115,7 +115,7 @@ describe('FeatureFlagService', () => {
 
   describe('isDisabled', () => {
     it('should make a GET call with the proper url', () => {
-      var expectedFeatureName = 'Foobar';
+      const expectedFeatureName = 'Foobar';
 
       backend.connections.subscribe((conn: MockConnection) => {
         expect(conn.request.url).toBe(this.apiUri + 'feature/' + expectedFeatureName);
@@ -142,7 +142,7 @@ describe('FeatureFlagService', () => {
     it('should return false and log when service fails other than not found', () => {
       spyOn(console, 'error');
 
-      var responseBody = 'Bad request';
+      const responseBody = 'Bad request';
       backend.connections.subscribe((connection: MockConnection) => {
         connection.mockError(new MockError(new ResponseOptions({
           type: ResponseType.Error,
@@ -158,8 +158,8 @@ describe('FeatureFlagService', () => {
     });
 
     it('should return false when feature exists and is enabled', () => {
-      var featureName = 'foobar'
-      var response = { 'name': featureName, 'isEnabled': true }
+      const featureName = 'foobar';
+      const response = { 'name': featureName, 'isEnabled': true };
       backend.connections.subscribe((connection: MockConnection) => {
         connection.mockRespond(new Response(new ResponseOptions({
           body: JSON.stringify(response),
@@ -173,8 +173,8 @@ describe('FeatureFlagService', () => {
     });
 
     it('should return true when feature exists and is disabled', () => {
-      var featureName = 'foobar'
-      var response = { 'name': featureName, 'isEnabled': false }
+      const featureName = 'foobar';
+      const response = { 'name': featureName, 'isEnabled': false };
       backend.connections.subscribe((connection: MockConnection) => {
         connection.mockRespond(new Response(new ResponseOptions({
           body: JSON.stringify(response),

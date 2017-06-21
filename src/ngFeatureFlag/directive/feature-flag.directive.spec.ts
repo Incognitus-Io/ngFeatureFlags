@@ -11,18 +11,18 @@ import {
     ViewChild,
     ChangeDetectionStrategy
 } from '@angular/core';
-import { By } from "@angular/platform-browser";
+import { By } from '@angular/platform-browser';
 import { IMock, Mock, It } from 'typemoq';
-import { Observable } from "rxjs/Rx";
+import { Observable } from 'rxjs/Rx';
 
 import { FeatureFlagDirective } from './feature-flag.directive';
 import { FeatureFlagService } from '../services/feature-flag.service';
 import { FeatureFlagConfig } from '../services/feature-flag-config';
 
 describe('FeatureFlagDirective', () => {
-    var mockService: IMock<FeatureFlagService>;
-    var debugElement: DebugElement;
-    var element: HTMLElement;
+    let mockService: IMock<FeatureFlagService>;
+    let debugElement: DebugElement;
+    let element: HTMLElement;
 
     beforeEach(async(() => {
         mockService = Mock.ofType(FeatureFlagService);
@@ -37,12 +37,12 @@ describe('FeatureFlagDirective', () => {
     }));
 
     describe('Simple feature flag', () => {
-        var fixture: ComponentFixture<SimpleToggleComponent>;
+        let fixture: ComponentFixture<SimpleToggleComponent>;
 
         function buildComponent() {
             fixture = TestBed.createComponent(SimpleToggleComponent);
             fixture.detectChanges();
-            debugElement = fixture.debugElement.query(By.css('#Foobar'))
+            debugElement = fixture.debugElement.query(By.css('#Foobar'));
             element = debugElement ? debugElement.nativeElement : undefined;
         }
 
@@ -62,12 +62,12 @@ describe('FeatureFlagDirective', () => {
     });
 
     describe('Hidden feature flag', () => {
-        var fixture: ComponentFixture<HiddenToggleComponent>;
+        let fixture: ComponentFixture<HiddenToggleComponent>;
 
         function buildComponent() {
             fixture = TestBed.createComponent(HiddenToggleComponent);
             fixture.detectChanges();
-            debugElement = fixture.debugElement.query(By.css('#Foobar'))
+            debugElement = fixture.debugElement.query(By.css('#Foobar'));
             element = debugElement ? debugElement.nativeElement : undefined;
         }
 
@@ -87,7 +87,7 @@ describe('FeatureFlagDirective', () => {
     });
 });
 
-
+/* tslint:disable */
 @Component({
     selector: 'app',
     template: `
@@ -109,3 +109,4 @@ class SimpleToggleComponent {
 class HiddenToggleComponent {
 
 }
+/* tslint:enable */

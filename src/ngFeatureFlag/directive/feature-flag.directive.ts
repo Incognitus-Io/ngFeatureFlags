@@ -5,15 +5,8 @@ import { FeatureFlagService } from '../services/feature-flag.service';
   selector: '[ngFeatureFlag]'
 })
 export class FeatureFlagDirective {
-
-  constructor(
-    private templateRef: TemplateRef<any>,
-    private viewContainer: ViewContainerRef,
-    private darkLumos: FeatureFlagService
-  ) { }
-
-  @Input() ngFeatureFlagHidden: boolean = false;
-  @Input() ngFeatureFlagDefaultTo: boolean = false;
+  @Input() ngFeatureFlagHidden = false;
+  @Input() ngFeatureFlagDefaultTo = false;
 
   @Input() set ngFeatureFlag(featureFlag: string) {
     if (featureFlag === undefined) {
@@ -31,4 +24,10 @@ export class FeatureFlagDirective {
         }
       });
   }
+
+  constructor(
+    private templateRef: TemplateRef<any>,
+    private viewContainer: ViewContainerRef,
+    private darkLumos: FeatureFlagService
+  ) { }
 }

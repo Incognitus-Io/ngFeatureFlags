@@ -34,7 +34,7 @@ describe('FeatureFlagService', () => {
           provide: FeatureFlagConfig, useValue: <FeatureFlagConfig>{
             apiUri: apiUri,
             tenantId: tenantId,
-            clientId: clientId
+            applicationId: clientId
           }
         }
       ]
@@ -62,7 +62,7 @@ describe('FeatureFlagService', () => {
       backend.connections.subscribe((conn: MockConnection) => {
         const headers = conn.request.headers.toJSON();
         expect(headers['X-Tenant']).toContain(tenantId);
-        expect(headers['X-Client']).toContain(clientId);
+        expect(headers['X-Application']).toContain(clientId);
       });
 
       service.isEnabled('Foobar').subscribe();
@@ -147,7 +147,7 @@ describe('FeatureFlagService', () => {
       backend.connections.subscribe((conn: MockConnection) => {
         const headers = conn.request.headers.toJSON();
         expect(headers['X-Tenant']).toContain(tenantId);
-        expect(headers['X-Client']).toContain(clientId);
+        expect(headers['X-Application']).toContain(clientId);
       });
 
       service.isDisabled('Foobar').subscribe();

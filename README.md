@@ -8,7 +8,7 @@ A section named `featureFlag` must be added to your `enviroment.ts` file.
    featureFlag: {
     apiUri: http://darklumos.io/api/,
     tenantId: 'abc1234',
-    clientId: 'foobar'
+    applicationId: 'foobar'
   }
   ```
   
@@ -16,7 +16,7 @@ A section named `featureFlag` must be added to your `enviroment.ts` file.
   --- | ---
   apiUri | The uri of the Dark Lumos API
   tenantId | Your tenant id
-  clientId | The  client id of the application
+  applicationId | The id of the application
 
 #### Step 2) app.modules.ts
   Import the `DarkLumosFeatureFlagsModule` and provide the `FeatureFlagConfig`

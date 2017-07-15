@@ -15,7 +15,7 @@ export class FeatureFlagService {
   private get headers(): Headers {
     const flagHeaders = new Headers();
     flagHeaders.append('X-Tenant', this.config.tenantId);
-    flagHeaders.append('X-Client', this.config.clientId);
+    flagHeaders.append('X-Application', this.config.applicationId);
     return flagHeaders;
   }
 

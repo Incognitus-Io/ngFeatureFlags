@@ -6,13 +6,17 @@ Integration of Dark Lumos into your Angular application is done in 2 setps.
 A section named `featureFlag` must be added to your `enviroment.ts` file.
    ```TypeScript
    featureFlag: {
-    apiUri: http://darklumos.io/api/
+    apiUri: http://darklumos.io/api/,
+    tenantId: 'abc1234',
+    clientId: 'foobar'
   }
   ```
   
   Key | Description
   --- | ---
   apiUri | The uri of the Dark Lumos API
+  tenantId | Your tenant id
+  clientId | The  client id of the application
 
 #### Step 2) app.modules.ts
   Import the `DarkLumosFeatureFlagsModule` and provide the `FeatureFlagConfig`

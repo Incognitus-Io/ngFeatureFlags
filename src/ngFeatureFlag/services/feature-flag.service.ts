@@ -1,4 +1,4 @@
-import { Http, Response } from '@angular/http';
+import { Http, Response, Headers } from '@angular/http';
 import { Injectable, Output, EventEmitter } from '@angular/core';
 import { Observable } from 'rxjs/Rx';
 import 'rxjs/add/operator/map';
@@ -10,6 +10,13 @@ import { Feature } from './feature';
 export class FeatureFlagService {
   private get apiUri(): string {
     return this.config.apiUri;
+  }
+
+  private get headers(): Headers {
+    const flagHeaders = new Headers();
+    flagHeaders.append('X-Tenant', this.config.tenantId);
+    flagHeaders.append('X-Client', this.config.clientId);
+    return flagHeaders;
   }
 
   constructor(private config: FeatureFlagConfig, private http: Http) { }
@@ -36,7 +43,7 @@ export class FeatureFlagService {
   }
 
   private GetFeatureStatus(featureName: string): Observable<Boolean> {
-    return this.http.get(this.apiUri + 'feature/' + featureName)
+    return this.http.get(this.apiUri + 'feature/' + featureName, { headers: this.headers })
       .map((res: Response) => {
         const feature = <Feature>res.json();
         return feature.isEnabled;

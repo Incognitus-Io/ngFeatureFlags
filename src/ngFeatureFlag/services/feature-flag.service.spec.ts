@@ -19,6 +19,8 @@ class MockError extends Response implements Error {
 
 describe('FeatureFlagService', () => {
   const apiUri = 'http://darklumos/api/';
+  const clientId = 'someClient';
+  const tenantId = 'someJoe';
   let service: FeatureFlagService;
   let backend: MockBackend;
 
@@ -28,7 +30,13 @@ describe('FeatureFlagService', () => {
       providers: [
         FeatureFlagService,
         { provide: XHRBackend, useClass: MockBackend },
-        { provide: FeatureFlagConfig, useValue: <FeatureFlagConfig>{ apiUri: this.apiUri } }
+        {
+          provide: FeatureFlagConfig, useValue: <FeatureFlagConfig>{
+            apiUri: apiUri,
+            tenantId: tenantId,
+            clientId: clientId
+          }
+        }
       ]
     });
   });
@@ -43,11 +51,21 @@ describe('FeatureFlagService', () => {
       const expectedFeatureName = 'Foobar';
 
       backend.connections.subscribe((conn: MockConnection) => {
-        expect(conn.request.url).toBe(this.apiUri + 'feature/' + expectedFeatureName);
+        expect(conn.request.url).toBe(apiUri + 'feature/' + expectedFeatureName);
         expect(conn.request.method).toBe(RequestMethod.Get);
       });
 
       service.isEnabled(expectedFeatureName).subscribe();
+    });
+
+    it('should make include x-tenant and x-client in headers', () => {
+      backend.connections.subscribe((conn: MockConnection) => {
+        const headers = conn.request.headers.toJSON();
+        expect(headers['X-Tenant']).toContain(tenantId);
+        expect(headers['X-Client']).toContain(clientId);
+      });
+
+      service.isEnabled('Foobar').subscribe();
     });
 
     it('should return false if feature is not found', () => {
@@ -118,11 +136,21 @@ describe('FeatureFlagService', () => {
       const expectedFeatureName = 'Foobar';
 
       backend.connections.subscribe((conn: MockConnection) => {
-        expect(conn.request.url).toBe(this.apiUri + 'feature/' + expectedFeatureName);
+        expect(conn.request.url).toBe(apiUri + 'feature/' + expectedFeatureName);
         expect(conn.request.method).toBe(RequestMethod.Get);
       });
 
       service.isDisabled(expectedFeatureName).subscribe();
+    });
+
+    it('should make include x-tenant and x-client in headers', () => {
+      backend.connections.subscribe((conn: MockConnection) => {
+        const headers = conn.request.headers.toJSON();
+        expect(headers['X-Tenant']).toContain(tenantId);
+        expect(headers['X-Client']).toContain(clientId);
+      });
+
+      service.isDisabled('Foobar').subscribe();
     });
 
     it('should return false if feature is not found', () => {

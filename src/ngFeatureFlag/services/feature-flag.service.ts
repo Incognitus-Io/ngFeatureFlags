@@ -21,7 +21,7 @@ export class FeatureFlagService {
 
   constructor(private config: FeatureFlagConfig, private http: Http) { }
 
-  public isEnabled(featureName: string): Observable<boolean> {
+  public isEnabled(featureName: string): Observable<boolean | Boolean> {
     return this.GetFeatureStatus(featureName)
       .catch((res: Response) => {
         if (res.status !== 404) {

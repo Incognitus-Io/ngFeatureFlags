@@ -12,6 +12,8 @@ export class FeatureFlagService {
     return this.config.apiUri;
   }
 
+
+
   private get headers(): Headers {
     const flagHeaders = new Headers();
     flagHeaders.append('X-Tenant', this.config.tenantId);
@@ -47,6 +49,17 @@ export class FeatureFlagService {
       .map((res: Response) => {
         const feature = <Feature>res.json();
         return feature.isEnabled;
+      });
+  }
+
+  private GetAllFeatures(): Observable<Map<string, boolean>> {
+    return this.http.get(this.apiUri + 'feature' , {headers: this.headers})
+      .map((res: Response) => {
+        const features = new Map<string, boolean>();
+        <Feature[]>(res.json()['Features']).forEach((feature: Feature) => {
+          features[feature.name] = feature.isEnabled;
+        });
+        return features;
       });
   }
 }

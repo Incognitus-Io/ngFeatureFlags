@@ -1,3 +1,4 @@
+import { Http, Response, ResponseOptions } from '@angular/http';
 import {
     async,
     ComponentFixture,
@@ -20,12 +21,24 @@ import { FeatureFlagService } from '../services/feature-flag.service';
 import { FeatureFlagConfig } from '../services/feature-flag-config';
 
 describe('FeatureFlagDirective', () => {
+    const mockOptions = new FeatureFlagConfig();
+    mockOptions.apiUri = 'foobar';
+
+    const mockHttp = Mock.ofType(Http);
+    const mockFeaturesResponse = new ResponseOptions();
+    mockFeaturesResponse.body = JSON.stringify({'Features': []});
+    mockHttp.setup(x => x.get(It.isAnyString(), It.isAny()))
+        .returns(() => Observable.of(new Response(mockFeaturesResponse)));
+
     let mockService: IMock<FeatureFlagService>;
     let debugElement: DebugElement;
     let element: HTMLElement;
 
     beforeEach(async(() => {
-        mockService = Mock.ofType(FeatureFlagService);
+        mockService = Mock.ofType2(FeatureFlagService, [
+            mockOptions,
+            mockHttp.object
+        ]);
 
         TestBed.configureTestingModule({
             declarations: [SimpleToggleComponent, HiddenToggleComponent, FeatureFlagDirective],
@@ -46,19 +59,19 @@ describe('FeatureFlagDirective', () => {
             element = debugElement ? debugElement.nativeElement : undefined;
         }
 
-        it('should show elemetn when feature is enabled', () => {
+        it('should show elemetn when feature is enabled', async(() => {
             mockService.setup(x => x.isEnabled(It.isAnyString())).returns(() => Observable.of(true));
             buildComponent();
 
             expect(element).toBeDefined();
-        });
+        }));
 
-        it('should hide elemetn when feature is disabled', () => {
+        it('should hide elemetn when feature is disabled', async(() => {
             mockService.setup(x => x.isEnabled(It.isAnyString())).returns(() => Observable.of(false));
             buildComponent();
 
             expect(element).not.toBeDefined();
-        });
+        }));
     });
 
     describe('Hidden feature flag', () => {

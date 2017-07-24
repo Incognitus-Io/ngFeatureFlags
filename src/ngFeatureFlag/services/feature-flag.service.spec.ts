@@ -1,3 +1,5 @@
+import { Http } from '@angular/http';
+import { ReflectiveInjector } from '@angular/core';
 import { TestBed, inject, async } from '@angular/core/testing';
 import {
   HttpModule,
@@ -45,6 +47,96 @@ describe('FeatureFlagService', () => {
     service = svc;
     backend = http;
   }));
+
+  describe('cache', () => {
+    const getService = () => {
+      const currentService = <any>service;
+      return new FeatureFlagService(currentService.config, currentService.http);
+    }
+
+    it('should initialize cache when getting feature if getting all features fails', () => {
+      const featureName = 'foobar';
+      const response = { 'name': featureName, 'isEnabled': false };
+      let httpCallCount = 0;
+
+      backend.connections.subscribe((connection: MockConnection) => {
+        if (connection.request.url === `${apiUri}feature/`) {
+          connection.mockError(new MockError(new ResponseOptions({
+            type: ResponseType.Error,
+            body: '',
+            status: 404
+          })));
+        } else {
+          connection.mockRespond(new Response(new ResponseOptions({
+            body: JSON.stringify(response),
+            status: 200
+          })));
+        }
+        httpCallCount++;
+      });
+
+      service = getService();
+      service.isEnabled(featureName).subscribe(() => {
+        service.isEnabled(featureName).subscribe(() => {
+          expect(httpCallCount).toBe(2);
+        });
+      });
+    });
+
+    it('should return feature status from cache', () => {
+      const featureName = 'foobar';
+      const response = { 'name': featureName, 'isEnabled': false };
+      let httpCallCount = 0;
+
+      backend.connections.subscribe((connection: MockConnection) => {
+        if (connection.request.url === `${apiUri}feature/`) {
+          connection.mockRespond(new Response(new ResponseOptions({
+            body: JSON.stringify({ 'features': [response] }),
+            status: 200
+          })));
+        } else {
+          connection.mockRespond(new Response(new ResponseOptions({
+            body: JSON.stringify(response),
+            status: 200
+          })));
+        }
+        httpCallCount++;
+      });
+
+      service = getService();
+      service.isEnabled(featureName).subscribe(() => {
+        expect(httpCallCount).toBe(1);
+      });
+    });
+
+    it('should save feature to cache if missing', () => {
+      const featureName1 = 'foobar';
+      const featureName2 = 'fizzbuzz';
+      const response1 = { 'name': featureName1, 'isEnabled': false };
+      const response2 = { 'name': featureName2, 'isEnabled': false };
+      let httpCallCount = 0;
+
+      backend.connections.subscribe((connection: MockConnection) => {
+        if (connection.request.url === `${apiUri}feature/`) {
+          connection.mockRespond(new Response(new ResponseOptions({
+            body: JSON.stringify({ 'features': [response1] }),
+            status: 200
+          })));
+        } else {
+          connection.mockRespond(new Response(new ResponseOptions({
+            body: JSON.stringify(response2),
+            status: 200
+          })));
+        }
+        httpCallCount++;
+      });
+
+      service = getService();
+      service.isEnabled(featureName2).subscribe(() => {
+        expect(httpCallCount).toBe(2);
+      });
+    });
+  });
 
   describe('isEnabled', () => {
     it('should make a GET call with the proper url', () => {

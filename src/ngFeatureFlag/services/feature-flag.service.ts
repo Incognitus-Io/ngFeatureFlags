@@ -19,7 +19,15 @@ export class FeatureFlagService {
         return flagHeaders;
     }
 
-    constructor(private config: FeatureFlagConfig, private http: Http) {}
+    private featureCache: Map<string, boolean> = undefined;
+    private featureWaitCount = 0;
+
+    constructor(private config: FeatureFlagConfig, private http: Http) {
+        this.GetAllFeatures().subscribe(
+            (features: Map<string, boolean>) => (this.featureCache = features),
+            (err) => (this.featureCache = null)
+        );
+    }
 
     public isEnabled(featureName: string): Observable<boolean | Boolean> {
         return this.GetFeatureStatus(featureName).catch((res: Response) => {
@@ -41,24 +49,44 @@ export class FeatureFlagService {
             });
     }
 
+    private WaitForFeatureCache(): boolean {
+        if (this.featureCache === undefined && this.featureWaitCount < 20) {
+            setTimeout(this.WaitForFeatureCache, 100);
+        } else if (this.featureCache === null || this.featureWaitCount >= 20) {
+            this.featureWaitCount = 0;
+            return false;
+        } else {
+            this.featureWaitCount = 0;
+            return true;
+        }
+    }
+
     private GetFeatureStatus(featureName: string): Observable<Boolean> {
+        const cachePopulated = this.WaitForFeatureCache();
+        if (cachePopulated && this.featureCache[featureName] !== undefined) {
+            return Observable.of(this.featureCache[featureName]);
+        } else if (this.featureCache == null) {
+            this.featureCache = new Map<string, boolean>();
+        }
+
         return this.http
             .get(this.apiUri + 'feature/' + featureName, {
                 headers: this.headers
             })
             .map((res: Response) => {
                 const feature = <Feature>res.json();
+                this.featureCache[featureName] = feature.isEnabled;
                 return feature.isEnabled;
             });
     }
 
     private GetAllFeatures(): Observable<Map<string, boolean>> {
         return this.http
-            .get(this.apiUri + 'feature', { headers: this.headers })
+            .get(this.apiUri + 'feature/', { headers: this.headers })
             .map((res: Response) => {
                 const features = new Map<string, boolean>();
                 <Feature[]>res
-                    .json()['Features']
+                    .json()['features']
                     .forEach((feature: Feature) => {
                         features[feature.name] = feature.isEnabled;
                     });

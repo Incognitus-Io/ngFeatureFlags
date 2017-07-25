@@ -1,22 +1,7 @@
-box: node:6.11
+box: darklumos/ng-headless-wercker
 test:
   steps:
     - npm-install
-
-    - script:
-      name: install chrome headless
-      code: |
-        apt-get update -y
-        apt-get install -y ca-certificates apt-transport-https ttf-wqy-zenhei ttf-unfonts-core
-        wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
-        echo "deb https://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list
-        apt-get update -y
-        apt-get install -y google-chrome-unstable
-
-    - script:
-      name: set browser
-      code: |
-        export CHROME_BIN=/usr/bin/google-chrome-unstable
 
     - script:
         name: test
@@ -31,25 +16,29 @@ deploy-github:
           export APP_VERSION=$(sed -n 's|"version": "\([[:digit:]].[[:digit:]].[[:digit:]]\)",|\1|p' package.json)
           export APP_VERSION_MAJ_MIN=$(echo $APP_VERSION | cut -d . -f -2)
           export APP_VERSION_BUILD=$(echo $APP_VERSION | cut -d . -f 3)
-          export NEW_APP_VERSION="${APP_VERSION_MAJ_MIN}.$(expr $APP_VERSION_BUILD + 1)"
-          echo "NEW_APP_VERSION: ${NEW_APP_VERSION}"
 
-          sed -i 's|"version": "${APP_VERSION}"|"version": "${NEW_APP_VERSION}"|g' package.json
+          export APP_VERSION="${APP_VERSION_MAJ_MIN}.${APP_VERSION_BUILD}"
+          export NEW_APP_VERSION="${APP_VERSION_MAJ_MIN}.$(expr $APP_VERSION_BUILD + 1)"
+
+          echo "Replacing ${APP_VERSION} with ${NEW_APP_VERSION}"
+          sed -i -e "s|\"version\": \"${APP_VERSION}\"|\"version\": \"${NEW_APP_VERSION}\"|g" package.json
 
     - script:
         name: commit version bump
         code: |
           git config user.email "deploy@darklumos.io"
           git config user.name  "Wercker CI"
+          git config push.default simple
 
-          git diff
-
-          git add .
+          git add package.json
           git commit -m "CI Bump version [skip ci]"
-          git push
+
+    - leipert/git-push@0.7.6:
+        gh_oauth: ${GITHUB_TOKEN}
 
     - github-create-release:
         token: $GITHUB_TOKEN
+        target-commitish: ${WERCKER_GIT_BRANCH}
         tag: v${NEW_APP_VERSION}
         title: EDIT ME - CI Deployment
         body: "

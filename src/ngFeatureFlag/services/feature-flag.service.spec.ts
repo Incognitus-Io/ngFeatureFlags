@@ -54,7 +54,7 @@ describe('FeatureFlagService', () => {
       return new FeatureFlagService(currentService.config, currentService.http);
     }
 
-    it('should initialize cache when getting feature if getting all features fails', () => {
+    it('should initialize cache when getting feature if getting all features fails', async(() => {
       const featureName = 'foobar';
       const response = { 'name': featureName, 'isEnabled': false };
       let httpCallCount = 0;
@@ -76,14 +76,16 @@ describe('FeatureFlagService', () => {
       });
 
       service = getService();
-      service.isEnabled(featureName).subscribe(() => {
+      service.initialize().then(() => {
         service.isEnabled(featureName).subscribe(() => {
-          expect(httpCallCount).toBe(2);
+          service.isEnabled(featureName).subscribe(() => {
+            expect(httpCallCount).toBe(2);
+          });
         });
       });
-    });
+    }));
 
-    it('should return feature status from cache', () => {
+    it('should return feature status from cache', async(() => {
       const featureName = 'foobar';
       const response = { 'name': featureName, 'isEnabled': false };
       let httpCallCount = 0;
@@ -104,12 +106,14 @@ describe('FeatureFlagService', () => {
       });
 
       service = getService();
-      service.isEnabled(featureName).subscribe(() => {
-        expect(httpCallCount).toBe(1);
+      service.initialize().then(() => {
+        service.isEnabled(featureName).subscribe(() => {
+          expect(httpCallCount).toBe(1);
+        });
       });
-    });
+    }));
 
-    it('should save feature to cache if missing', () => {
+    it('should save feature to cache if missing', async(() => {
       const featureName1 = 'foobar';
       const featureName2 = 'fizzbuzz';
       const response1 = { 'name': featureName1, 'isEnabled': false };
@@ -132,15 +136,17 @@ describe('FeatureFlagService', () => {
       });
 
       service = getService();
-      service.isEnabled(featureName2).subscribe(() => {
-        expect(httpCallCount).toBe(2);
+      service.initialize().then(() => {
+        service.isEnabled(featureName2).subscribe(() => {
+          expect(httpCallCount).toBe(2);
+        });
       });
-    });
+    }));
   });
 
   describe('isEnabled', () => {
     it('should make a GET call with the proper url', () => {
-      const expectedFeatureName = 'Foobar';
+      const expectedFeatureName = 'foobar';
 
       backend.connections.subscribe((conn: MockConnection) => {
         expect(conn.request.url).toBe(apiUri + 'feature/' + expectedFeatureName);

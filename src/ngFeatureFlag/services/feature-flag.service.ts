@@ -19,7 +19,7 @@ export class FeatureFlagService {
         return flagHeaders;
     }
 
-    private featureCache: Map<string, boolean> = undefined;
+    public featureCache: Map<string, boolean> = undefined;
 
     constructor(private config: FeatureFlagConfig, private http: Http) {
     }
@@ -53,9 +53,9 @@ export class FeatureFlagService {
     }
 
     private GetFeatureStatus(featureName: string): Observable<Boolean> {
-        if (this.featureCache != null && this.featureCache[featureName] !== undefined) {
-            return Observable.of(this.featureCache[featureName]);
-        } else if (this.featureCache == null) {
+        if (this.featureCache && this.featureCache.get(featureName) != null) {
+            return Observable.of(this.featureCache.get(featureName));
+        } else if (!this.featureCache) {
             this.featureCache = new Map<string, boolean>();
         }
 
@@ -65,7 +65,7 @@ export class FeatureFlagService {
             })
             .map((res: Response) => {
                 const feature = <Feature>res.json();
-                this.featureCache[featureName] = feature.isEnabled;
+                this.featureCache.set(feature.name, feature.isEnabled);
                 return feature.isEnabled;
             });
     }
@@ -75,10 +75,9 @@ export class FeatureFlagService {
             .get(this.apiUri + 'feature/', { headers: this.headers })
             .map((res: Response) => {
                 const features = new Map<string, boolean>();
-                <Feature[]>res
-                    .json()['features']
-                    .forEach((feature: Feature) => {
-                        features[feature.name] = feature.isEnabled;
+                const resFeatures = <Array<Feature>>res.json()['features'] || []
+                resFeatures.forEach((feature: Feature) => {
+                        features.set(feature.name, feature.isEnabled);
                     });
                 return features;
             })

@@ -80,6 +80,8 @@ describe('FeatureFlagService', () => {
         service.isEnabled(featureName).subscribe(() => {
           service.isEnabled(featureName).subscribe(() => {
             expect(httpCallCount).toBe(2);
+            expect(service.featureCache.size).toBe(1);
+            expect(service.featureCache.get(response.name)).toBe(response.isEnabled);
           });
         });
       });
@@ -107,8 +109,9 @@ describe('FeatureFlagService', () => {
 
       service = getService();
       service.initialize().then(() => {
-        service.isEnabled(featureName).subscribe(() => {
+        service.isEnabled(featureName).subscribe((res: boolean) => {
           expect(httpCallCount).toBe(1);
+          expect(res).toBe(response.isEnabled);
         });
       });
     }));

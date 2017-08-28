@@ -4,6 +4,17 @@
     {
       "type": "chrome",
       "request": "attach",
+      "name": "Attach Chrome",
+      "address": "localhost",
+      "port": 9222,
+      "pathMapping": {
+        "/": "${workspaceRoot}",
+        "/base/": "${workspaceRoot}/"
+      }
+    },
+    {
+      "type": "chrome",
+      "request": "attach",
       "name": "Attach Karma Chrome",
       "address": "localhost",
       "port": 9333,

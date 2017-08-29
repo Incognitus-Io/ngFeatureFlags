@@ -1,6 +1,6 @@
 {
   "name": "ng-feature-flags",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "license": "MIT",
   "author": "James Stumme <stummej@darklumos.io>",
   "description": "Dark Lumos feature flag directive and servie for Angular (2 and beyond).",

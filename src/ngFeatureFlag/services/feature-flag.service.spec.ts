@@ -116,6 +116,27 @@ describe('FeatureFlagService', () => {
       });
     }));
 
+    it('should initialize cache case independent', async(() => {
+      const featureName = 'foobar';
+      const response = { 'name': featureName, 'isEnabled': false };
+
+      backend.connections.subscribe((connection: MockConnection) => {
+        if (connection.request.url === `${apiUri}feature/`) {
+          connection.mockRespond(new Response(new ResponseOptions({
+            body: JSON.stringify({ 'Features': [response] }),
+            status: 200
+          })));
+        }
+      });
+
+      service = getService();
+      service.initialize().then(() => {
+        service.isEnabled(featureName).subscribe((res: boolean) => {
+          expect(res).toBe(response.isEnabled);
+        });
+      });
+    }));
+
     it('should save feature to cache if missing', async(() => {
       const featureName1 = 'foobar';
       const featureName2 = 'fizzbuzz';

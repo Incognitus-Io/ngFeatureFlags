@@ -75,7 +75,7 @@ export class FeatureFlagService {
             .get(this.apiUri + 'feature/', { headers: this.headers })
             .map((res: Response) => {
                 const features = new Map<string, boolean>();
-                const resFeatures = <Array<Feature>>res.json()['features'] || []
+                const resFeatures = <Array<Feature>>res.json()['Features'] || <Array<Feature>>res.json()['features'] || []
                 resFeatures.forEach((feature: Feature) => {
                         features.set(feature.name, feature.isEnabled);
                     });

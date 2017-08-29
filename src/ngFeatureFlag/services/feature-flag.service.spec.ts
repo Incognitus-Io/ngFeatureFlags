@@ -7,7 +7,8 @@ import {
   ResponseOptions,
   ResponseType,
   XHRBackend,
-  RequestMethod
+  RequestMethod,
+  RequestOptions
 } from '@angular/http';
 import { MockBackend, MockConnection } from '@angular/http/testing';
 
@@ -20,7 +21,7 @@ class MockError extends Response implements Error {
 }
 
 describe('FeatureFlagService', () => {
-  const apiUri = 'http://darklumos/api/';
+  const apiUri = 'https://incognitus/api/';
   const clientId = 'someClient';
   const tenantId = 'someJoe';
   let service: FeatureFlagService;
@@ -48,11 +49,39 @@ describe('FeatureFlagService', () => {
     backend = http;
   }));
 
+  const getService = (config: FeatureFlagConfig = undefined) => {
+    const currentService = <any>service;
+    return new FeatureFlagService(config || currentService.config, currentService.http);
+  }
+
+  describe('config', () => {
+    it('should default to prod domain if not specified', async(() => {
+      const prodUri = 'https://incognitus.io/api/';
+      const config = <FeatureFlagConfig>{
+        tenantId: tenantId,
+        applicationId: clientId
+      }
+      let httpCallCount = 0;
+
+      backend.connections.subscribe((connection: MockConnection) => {
+        if (connection.request.url.startsWith(prodUri)) {
+          httpCallCount++;
+        }
+        connection.mockError(new MockError(new ResponseOptions({
+          type: ResponseType.Error,
+          body: '',
+          status: 404
+        })));
+      });
+
+      service = getService(config);
+      service.isEnabled('foobar').subscribe(() => {
+        expect(httpCallCount).toBe(1);
+      });
+    }));
+  });
+
   describe('cache', () => {
-    const getService = () => {
-      const currentService = <any>service;
-      return new FeatureFlagService(currentService.config, currentService.http);
-    }
 
     it('should initialize cache when getting feature if getting all features fails', async(() => {
       const featureName = 'foobar';

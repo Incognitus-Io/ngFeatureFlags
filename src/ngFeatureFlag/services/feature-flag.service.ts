@@ -9,7 +9,7 @@ import { Feature } from './feature';
 @Injectable()
 export class FeatureFlagService {
     private get apiUri(): string {
-        return this.config.apiUri;
+        return this.config.apiUri || 'https://incognitus.io/api/';
     }
 
     private get headers(): Headers {

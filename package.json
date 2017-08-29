@@ -1,6 +1,6 @@
 {
   "name": "ng-feature-flags",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "license": "MIT",
   "author": "James Stumme <stummej@incognitus.io>",
   "description": "Incognitus feature flag directive and servie for Angular (2 and beyond).",

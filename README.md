@@ -1,5 +1,6 @@
 # Incognitus Feature Flag (Angular 2+)
 [![wercker status](https://app.wercker.com/status/2bcec7ce0e0efa362c58b9e22753016e/s/master "wercker status")](https://app.wercker.com/project/byKey/2bcec7ce0e0efa362c58b9e22753016e)
+[![codecov](https://codecov.io/gh/Incognitus-Io/ngFeatureFlags/branch/master/graph/badge.svg)](https://codecov.io/gh/Incognitus-Io/ngFeatureFlags)
 
 ## Integrating Incognitus
 Integration of Incognitus into your Angular application is done in 2 setps.

@@ -6,7 +6,12 @@ test:
     - script:
         name: test
         code: |
-          ./node_modules/.bin/ng test --single-run --config karma.wercker.conf.js
+          npm test
+
+    - script:
+        name: coverage
+        code: |
+          npm run cov
 
 deploy-github:
   steps:
